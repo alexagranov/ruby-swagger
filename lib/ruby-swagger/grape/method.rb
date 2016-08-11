@@ -17,7 +17,6 @@ module Swagger::Grape
       operation_params
       operation_responses
       operation_security
-
       self
     end
 
@@ -115,9 +114,11 @@ module Swagger::Grape
           end
 
         end
+
         # rubocop:enable IfInsideElse
 
-        @operation.responses.add_response('200', Swagger::Data::Response.parse(rainbow_response))
+        @operation.responses.add_response @route_settings.response[:status_code],
+                                          Swagger::Data::Response.parse(rainbow_response)
       end
 
       @operation.responses.add_response('default', Swagger::Data::Response.parse({ 'description' => 'Unexpected error' }))

@@ -161,6 +161,29 @@ class ApplicationsAPI < Grape::API
       api_present(@applications)
     end
 
+    api_desc 'Delete roar' do
+      response StatusDetailedEntity, isArray: true, status_code: :accepted
+    end
+    delete '/:id/roar' do
+      @application = { id: '123456', name: 'An app', description: 'Great App' }
+      api_present(@applications)
+    end
+
+    api_desc 'Create a pet' do
+      response StatusDetailedEntity, isArray: true, status_code: :no_content
+    end
+    post('/pet') {}
+
+    api_desc 'Update a pet' do
+      response StatusDetailedEntity, isArray: true, status_code: 303, headers: {
+        'Location' => {
+          description: 'As per rfc2616',
+          type: 'string'
+        }
+      }
+    end
+    put('/pet') {}
+
     api_desc 'Deactivate an application.' do
       headers authentication_headers
       scopes %w(application:read application:write application:execute)
