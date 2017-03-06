@@ -336,4 +336,26 @@ describe Swagger::Data::Parameter do
       end
     end
   end
+
+  describe '#from_grape' do
+    subject { Swagger::Data::Parameter.from_grape(parameter) }
+
+    context 'when type is Rack::Multipart::UploadedFile' do
+      let(:parameter) do
+        [
+          'param_name',
+          {
+            in: 'query',
+            description: 'the super string',
+            required: true,
+            type: 'Rack::Multipart::UploadedFile'
+          }
+        ]
+      end
+
+      it 'should translate to type file' do
+        expect(subject.type).to eq 'file'
+      end
+    end
+  end
 end
