@@ -51,7 +51,7 @@ module Swagger::Data
     def basePath=(new_path)
       new_path = new_path.nil? ? '/' : new_path
 
-      unless new_path =~ /^\/.+$/
+      unless new_path =~ /^\//
         new_path = "/#{new_path}" # new path must start with a /
       end
 
