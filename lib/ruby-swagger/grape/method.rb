@@ -136,6 +136,14 @@ module Swagger::Grape
       end
     end
 
+    def operation_multipart
+      if @operation.consumes.nil?
+        @operation.consumes = ['multipart/form-data']
+      elsif !@operation.consumes.include?('multipart/form-data')
+        @operation.consumes += ['multipart/form-data']
+      end
+    end
+
     # extract the tags
     def grape_tags
       (@route_settings.tags && !@route_settings.tags.empty?) ? @route_settings.tags : [@route_name.split('/')[1]]
@@ -153,10 +161,13 @@ module Swagger::Grape
       when 'delete'
         query_params
       when 'post'
+        file_params
         body_params
       when 'put'
+        file_params
         body_params
       when 'patch'
+        file_params
         body_params
       when 'head'
         raise ArgumentError.new("Don't know how to handle the http verb HEAD for #{@route_name}")
@@ -206,6 +217,20 @@ module Swagger::Grape
         swag_param.in = 'query'
 
         @params[parameter.first.to_s] = swag_param
+      end
+    end
+
+    def file_params
+      # extract all file params with type multipart/form-date
+
+      @route_settings.params.each do |parameter|
+        name, val = parameter
+        next if @params[name.to_s]
+        next unless val[:type].to_s == 'Rack::Multipart::UploadedFile'
+
+        operation_multipart
+        swag_param = Swagger::Data::Parameter.from_grape(parameter)
+        @params[name.to_s] = swag_param
       end
     end
 
