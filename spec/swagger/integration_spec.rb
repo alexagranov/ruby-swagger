@@ -343,6 +343,26 @@ describe 'Ruby::Swagger' do
 
         expect(doc['responses']['default']['description']).to eq 'Unexpected error'
       end
+
+      context '#response_code' do
+        subject { doc['responses'].keys }
+
+        describe 'roar#delete' do
+          let(:doc) { open_yaml('./doc/swagger/paths/applications/{id}/roar/delete.yml') }
+          it { is_expected.to include '202' }
+        end
+
+        describe 'pet#create' do
+          let(:doc) { open_yaml('./doc/swagger/paths/applications/pet/post.yml') }
+          it { is_expected.to include '204' }
+        end
+
+        describe 'pet#update' do
+          let(:doc) { open_yaml('./doc/swagger/paths/applications/pet/put.yml') }
+          it { is_expected.to include '303' }
+        end
+
+      end
     end
 
     describe 'definitions' do

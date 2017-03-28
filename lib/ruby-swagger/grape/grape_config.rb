@@ -74,7 +74,18 @@ module Grape
           response_obj[:headers] = options[:headers] || options['headers']
           response_obj[:isArray] = options[:isArray] || options['isArray']
 
+          response_obj[:status_code] = status_code(options[:status_code] || options['status_code'])
+
           @api_options[:response] = response_obj
+        end
+
+        def status_code(code)
+          return '200' if code.nil?
+          return code.to_s if code.is_a?(Fixnum)
+          raise ArgumentError, 'Status code must be Fixnum, Symbol or nil.' unless code.is_a?(Symbol)
+          raise ArgumentError, "Status code :#{status} is invalid." unless Rack::Utils::SYMBOL_TO_STATUS_CODE.keys.include?(code)
+
+          Rack::Utils.status_code(code).to_s
         end
 
         def errors(errors_value)
@@ -127,6 +138,11 @@ module Grape
           @@response_root = new_value
         end
 
+        @@response_status_code = nil
+        def default_response_status_code(new_value)
+          @@response_status_code = new_value
+        end
+
         @@response_entity = nil
         def default_response_entity(new_value)
           @@response_entity = new_value
@@ -143,6 +159,7 @@ module Grape
               entity: @@response_entity,
               root: @@response_root,
               headers: @@response_headers,
+              status_code: @@response_status_code,
               isArray: false
             },
             errors: @@errors,
